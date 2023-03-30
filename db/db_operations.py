@@ -1,9 +1,12 @@
+import logging
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
 from utiles.constants import KIND
 
 datastore_client = datastore.Client()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def store_variable(variable_name: str, variable_value: str) -> None:
@@ -22,6 +25,7 @@ def store_variable(variable_name: str, variable_value: str) -> None:
             'value': variable_value
         }
     )
+    logger.info(f'save entity: {entity}')
     datastore_client.put(entity)
 
 

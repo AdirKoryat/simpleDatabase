@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, render_template, request
 from collections import deque
 from db.db_operations import store_variable, get_entity_by_key, get_entities_by_value, delete_entity_by_key, \
@@ -8,6 +9,8 @@ from utiles.validations import validate_input
 
 app = Flask(__name__)
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 undo_stack = deque()
 redo_stack = deque()
@@ -35,7 +38,9 @@ def set_variable() -> str:
         else:
             old_value = NONE_STR
         undo_stack.append((variable_name, old_value))
+        logger.info(f'SET: undo stack state: {undo_stack}')
     except ValueError as ex:
+        logger.info(f'Invalid input: {variable_name}')
         error_message = str(ex)
     return render_template(HTML_PATH, output=output, error_message=error_message)
 
@@ -60,6 +65,7 @@ def unset() -> str:
     if entity:
         old_value = entity[VALUE_ATTRIBUTE]
         undo_stack.append((variable_name, old_value))
+        logger.info(f'UNSET: undo stack state: {undo_stack}')
 
     delete_entity_by_key(variable_name)
     output = f'{variable_name} = {NONE_STR}'
@@ -84,11 +90,13 @@ def undo() -> str:
         else:
             old_value = NONE_STR
         redo_stack.append((variable_name, old_value))
+        logger.info(f'UNDO: redo stack state: {redo_stack}')
         if variable_value == NONE_STR:
             delete_entity_by_key(variable_name)
         else:
             store_variable(variable_name, variable_value)
         output = f'{variable_name} = {variable_value}'
+        logger.info(f'UNDO: undo stack state: {undo_stack}')
     return render_template(HTML_PATH, output=output)
 
 
@@ -103,6 +111,7 @@ def redo() -> str:
             store_variable(variable_name, variable_value)
 
         output = f'{variable_name} = {variable_value}'
+        logger.info(f'REDO: redo stack state: {redo_stack}')
 
     return render_template(HTML_PATH, output=output)
 
