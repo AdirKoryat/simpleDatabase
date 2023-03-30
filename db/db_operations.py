@@ -1,8 +1,9 @@
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from utiles.constants import KIND
+
 datastore_client = datastore.Client()
-KIND = 'variable'
 
 
 def store_variable(variable_name: str, variable_value: str) -> None:
@@ -49,5 +50,5 @@ def delete_entity_by_key(key: str) -> None:
 
 
 def delete_all_entities() -> None:
-    entities = list(datastore_client.query(kind='variable').fetch())
+    entities = list(datastore_client.query(kind=KIND).fetch())
     datastore_client.delete_multi([entity.key for entity in entities])

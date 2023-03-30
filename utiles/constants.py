@@ -1,0 +1,9 @@
+
+HTML_PATH = 'index.html'
+NAME_PARAMETER = 'name'
+VALUE_PARAMETER = 'value'
+VALUE_ATTRIBUTE = 'value'
+NONE_STR = 'None'
+NO_COMMANDS_STR = 'NO COMMANDS'
+CLEANED_STR = 'CLEANED'
+KIND = 'variable'
