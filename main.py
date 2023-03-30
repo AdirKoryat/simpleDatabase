@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 
-from db.db_operations import store_variable, get_variable_value
+from db.db_operations import store_variable, get_entity_by_key, get_entities_by_value, delete_entity_by_key, \
+    delete_all_entities
 from utiles.validations import validate_input
 
 app = Flask(__name__)
@@ -25,16 +26,40 @@ def set_variable() -> str:
     except ValueError as ex:
         error_message = str(ex)
 
-    print(f'Output = {output}\n Error = {error_message}')
     return render_template('index.html', output=output, error_message=error_message)
 
 
 @app.route('/get')
 def get() -> str:
-    output = None
     variable_name = request.args.get('name')
-    output = get_variable_value(variable_name)
-    print(f'Output = {output}')
+    entity = get_entity_by_key(variable_name)
+    if entity:
+        output = entity['value']
+    else:
+        output = 'None'
+
+    return render_template('index.html', output=output)
+
+
+@app.route('/unset')
+def unset() -> str:
+    variable_name = request.args.get('name')
+    delete_entity_by_key(variable_name)
+    output = f'{variable_name} = None'
+    return render_template('index.html', output=output)
+
+
+@app.route('/numequalto')
+def num_equal_to() -> str:
+    variable_value = request.args.get('value')
+    output = str(len(get_entities_by_value(variable_value)))
+    return render_template('index.html', output=output)
+
+
+@app.route('/end')
+def end() -> str:
+    delete_all_entities()
+    output = "CLEANED"
     return render_template('index.html', output=output)
 
 
