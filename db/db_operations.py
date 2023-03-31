@@ -20,7 +20,7 @@ def store_variable(variable_name: str, variable_value: str) -> Tuple[str, str]:
     :return: Tuple of previous key and value if exists otherwise return the key with value 'None'.
     """
     complete_key = datastore_client.key(KIND, variable_name)
-    key, old_value = get_entity_by_key(variable_name)
+    key, old_value = get_key_value_by_key(variable_name)
 
     if variable_value == NONE_STR:
         return variable_name, old_value
@@ -38,7 +38,7 @@ def store_variable(variable_name: str, variable_value: str) -> Tuple[str, str]:
     return variable_name, old_value
 
 
-def get_entity_by_key(key: str) -> Tuple[str, str]:
+def get_key_value_by_key(key: str) -> Tuple[str, str]:
     """
     :param key: Entity key.
     :return:  Return key and value of the entity.
